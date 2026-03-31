@@ -101,7 +101,7 @@ java -cp "lib/*;src/src/balde/bah/tp6/javafx-sdk-21.x/lib/*:src" --module-path "
 
 ## 🖼 Capture d'écran de l'interface
 
-![Interface du jeu de mots croisés](./interface.jpg)
+![Interface du jeu de mots croisés](./Interface.jpg)
 
 ## 🎯 Utilisation
 
