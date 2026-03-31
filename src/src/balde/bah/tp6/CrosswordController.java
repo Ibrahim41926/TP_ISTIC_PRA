@@ -6,13 +6,23 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.KeyCode;
 import javafx.util.Duration;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class CrosswordController {
 
@@ -20,19 +30,49 @@ public class CrosswordController {
     @FXML private ListView<Clue> horizontalListView;
     @FXML private ListView<Clue> verticalListView;
 
+    // Nouveaux éléments FXML pour multijoueur et améliorations UI
+    @FXML private CheckMenuItem multiplayerMode;
+    @FXML private CheckMenuItem showTimer;
+    @FXML private CheckMenuItem showHints;
+    @FXML private Label timerLabel;
+    @FXML private Label gameStatusLabel;
+    @FXML private Label currentPlayerLabel;
+    @FXML private HBox multiplayerInfo;
+    @FXML private Label player1Score;
+    @FXML private Label player2Score;
+    @FXML private Label statsLabel;
+
     private Crossword crossword;
     private boolean isHorizontal = true;
     private DatabaseHelper dbHelper = new DatabaseHelper();
+
+    // Variables multijoueur
+    private List<Player> players = new ArrayList<>();
+    private int currentPlayerIndex = 0;
+    private boolean isMultiplayerMode = false;
+    private Timer gameTimer;
+    private long gameStartTime;
+    private int totalCells = 0;
+    private int filledCells = 0;
 
     // Case courante
     private int currentRow = -1;
     private int currentCol = -1;
 
     @FXML
+    public void initialize() {
+        // Initialiser avec un joueur solo
+        players.add(new Player("Joueur 1"));
+        updatePlayerDisplay();
+        startTimer();
+    }
+
+    @FXML
     public void handleNewGrid() throws Exception {
         Crossword nouvellePartie = dbHelper.extractRandomGrid();
         if (nouvellePartie != null) {
             this.setCrossword(nouvellePartie);
+            resetGame();
         }
     }
 
@@ -143,6 +183,7 @@ public class CrosswordController {
                 char letter = event.getText().toUpperCase().charAt(0);
                 crossword.setProposition(row, col, letter);
                 moveFocus(row, col, isHorizontal, 1);
+                updateStats();
                 checkForCompletion();
 
             } else if (code == KeyCode.BACK_SPACE) {
@@ -266,8 +307,166 @@ public class CrosswordController {
         }
     }
 
+    // ===========================================
+    // MÉTHODES MULTIJOUEUR ET AMÉLIORATIONS UI
+    // ===========================================
+
+    @FXML
+    private void toggleMultiplayer() {
+        isMultiplayerMode = multiplayerMode.isSelected();
+        multiplayerInfo.setVisible(isMultiplayerMode);
+        multiplayerInfo.setManaged(isMultiplayerMode);
+
+        if (isMultiplayerMode && players.size() < 2) {
+            addPlayer();
+        }
+
+        updatePlayerDisplay();
+        updateGameStatus();
+    }
+
+    @FXML
+    private void addPlayer() {
+        TextInputDialog dialog = new TextInputDialog("Joueur " + (players.size() + 1));
+        dialog.setTitle("Ajouter un joueur");
+        dialog.setHeaderText("Entrez le nom du nouveau joueur:");
+        dialog.setContentText("Nom:");
+
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(name -> {
+            if (!name.trim().isEmpty()) {
+                players.add(new Player(name.trim()));
+                updatePlayerDisplay();
+            }
+        });
+    }
+
+    @FXML
+    private void resetScores() {
+        for (Player player : players) {
+            player = new Player(player.getName()); // Reset all stats
+        }
+        updatePlayerDisplay();
+        updateStats();
+    }
+
+    @FXML
+    private void handleValidate() {
+        validateGrid();
+        checkForCompletion();
+    }
+
+    @FXML
+    private void handleExit() {
+        System.exit(0);
+    }
+
+    @FXML
+    private void showAbout() {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("À propos - Mots Croisés JavaFX");
+        alert.setHeaderText("TP6 PRA - L3 ISTIC");
+        alert.setContentText("Application de mots croisés interactive\n\n" +
+                           "Développé par: Ibrahim Balde & Ibrahima Kalil Bah\n" +
+                           "Technologies: JavaFX, MySQL, JDBC\n" +
+                           "Version: 2.0 - Mode Multijoueur");
+        alert.showAndWait();
+    }
+
+    private void startTimer() {
+        gameStartTime = System.currentTimeMillis();
+        if (gameTimer != null) {
+            gameTimer.cancel();
+        }
+        gameTimer = new Timer();
+        gameTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                javafx.application.Platform.runLater(() -> updateTimer());
+            }
+        }, 0, 1000);
+    }
+
+    private void updateTimer() {
+        if (timerLabel != null && showTimer.isSelected()) {
+            long elapsed = (System.currentTimeMillis() - gameStartTime) / 1000;
+            timerLabel.setText(String.format("Timer: %02d:%02d", elapsed / 60, elapsed % 60));
+        }
+    }
+
+    private void resetGame() {
+        gameStartTime = System.currentTimeMillis();
+        filledCells = 0;
+        totalCells = 0;
+
+        // Compter les cases blanches
+        if (crossword != null) {
+            for (int r = 0; r < crossword.getHeight(); r++) {
+                for (int c = 0; c < crossword.getWidth(); c++) {
+                    if (!crossword.isBlackSquare(r, c)) {
+                        totalCells++;
+                    }
+                }
+            }
+        }
+
+        updateStats();
+        updateGameStatus();
+    }
+
+    private void updatePlayerDisplay() {
+        if (currentPlayerLabel != null) {
+            currentPlayerLabel.setText("Joueur: " + getCurrentPlayer().getName());
+        }
+
+        if (players.size() >= 1 && player1Score != null) {
+            player1Score.setText(String.valueOf(players.get(0).getScore()));
+        }
+        if (players.size() >= 2 && player2Score != null) {
+            player2Score.setText(String.valueOf(players.get(1).getScore()));
+        }
+    }
+
+    private void updateStats() {
+        if (statsLabel != null) {
+            String stats = String.format("Cases remplies: %d/%d\nTemps: %s\nPrécision: %.1f%%",
+                                       filledCells, totalCells,
+                                       timerLabel.getText().replace("Timer: ", ""),
+                                       getCurrentPlayer().getAccuracy());
+            statsLabel.setText(stats);
+        }
+    }
+
+    private void updateGameStatus() {
+        if (gameStatusLabel != null) {
+            if (isMultiplayerMode) {
+                gameStatusLabel.setText("Mode multijoueur - Tour de " + getCurrentPlayer().getName());
+            } else {
+                gameStatusLabel.setText("Mode solo - Bonne chance !");
+            }
+        }
+    }
+
+    private Player getCurrentPlayer() {
+        return players.get(currentPlayerIndex);
+    }
+
+    private void nextPlayer() {
+        if (isMultiplayerMode && players.size() > 1) {
+            getCurrentPlayer().endTurn();
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+            getCurrentPlayer().startTurn();
+            updatePlayerDisplay();
+            updateGameStatus();
+        }
+    }
+
     private void validateGrid() {
         try {
+            int correctCount = 0;
+            int totalValidated = 0;
+            filledCells = 0;
+
             for (Node node : gridPane.getChildren()) {
                 Integer r = GridPane.getRowIndex(node);
                 Integer c = GridPane.getColumnIndex(node);
@@ -275,18 +474,42 @@ public class CrosswordController {
                 if (r != null && c != null && !crossword.isBlackSquare(r, c)) {
                     char prop = crossword.getProposition(r, c);
                     char sol = crossword.getSolution(r, c);
+
+                    // Compter les cases remplies
+                    if (prop != ' ' && prop != '\0') {
+                        filledCells++;
+                    }
+
                     node.getStyleClass().remove("correct-cell");
                     node.getStyleClass().remove("wrong-cell");
 
                     if (prop != ' ' && prop != '\0') {
+                        totalValidated++;
                         if (Character.toUpperCase(prop) == Character.toUpperCase(sol)) {
                             node.getStyleClass().add("correct-cell");
+                            correctCount++;
+                            if (isMultiplayerMode) {
+                                getCurrentPlayer().addCorrectAnswer();
+                            }
                         } else {
                             node.getStyleClass().add("wrong-cell");
+                            if (isMultiplayerMode) {
+                                getCurrentPlayer().addWrongAnswer();
+                            }
                         }
                     }
                 }
             }
+
+            // Mettre à jour les statistiques
+            updateStats();
+            updatePlayerDisplay();
+
+            // Passer au joueur suivant en mode multijoueur
+            if (isMultiplayerMode && totalValidated > 0) {
+                nextPlayer();
+            }
+
         } catch (Exception e) {
             System.err.println("Erreur de validation : " + e.getMessage());
         }
@@ -318,9 +541,34 @@ public class CrosswordController {
     private void showCongratulations() {
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("🎉 Félicitations ! 🎉");
-        alert.setHeaderText("Grille complétée !");
-        alert.setContentText("Bravo ! Vous avez réussi à compléter la grille des mots croisés correctement.\n\n"
-                           + "Voulez-vous jouer une nouvelle partie ?");
+
+        String winnerMessage = "";
+        if (isMultiplayerMode && players.size() > 1) {
+            // Trouver le gagnant
+            Player winner = players.stream()
+                    .max((p1, p2) -> Integer.compare(p1.getScore(), p2.getScore()))
+                    .orElse(players.get(0));
+
+            alert.setHeaderText("Partie terminée !");
+            winnerMessage = String.format("\nGagnant: %s (Score: %d)\n\n",
+                                        winner.getName(), winner.getScore());
+
+            // Afficher les scores de tous les joueurs
+            StringBuilder scores = new StringBuilder("Scores finaux:\n");
+            for (Player player : players) {
+                scores.append(String.format("• %s: %d points (%.1f%% précision)\n",
+                                          player.getName(), player.getScore(), player.getAccuracy()));
+            }
+            alert.setContentText("La grille a été complétée !" + winnerMessage + scores.toString() +
+                               "\nVoulez-vous commencer une nouvelle partie ?");
+        } else {
+            alert.setHeaderText("Grille complétée !");
+            alert.setContentText("Bravo ! Vous avez réussi à compléter la grille des mots croisés correctement.\n\n" +
+                               "Temps: " + timerLabel.getText() + "\n" +
+                               "Précision: " + String.format("%.1f%%", getCurrentPlayer().getAccuracy()) + "\n\n" +
+                               "Voulez-vous jouer une nouvelle partie cher " + getCurrentPlayer().getName() + " ?");
+        }
+
         alert.showAndWait().ifPresent(response -> {
             try {
                 handleNewGrid();

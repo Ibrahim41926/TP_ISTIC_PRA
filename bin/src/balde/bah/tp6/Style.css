@@ -1,54 +1,268 @@
-/*  Grille */
+/* ===========================================
+   MOTS CROISÉS JAVAFX - STYLE MODERNE
+   =========================================== */
+
+.root {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #667eea 0%, #764ba2 100%);
+    -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+/* ===========================================
+   GRILLE PRINCIPALE
+   =========================================== */
+
 .crossword-cell {
-    -fx-min-width: 40px;
-    -fx-min-height: 40px;
-    -fx-max-width: 40px;
-    -fx-max-height: 40px;
-    -fx-border-color: #888888;
+    -fx-min-width: 45px;
+    -fx-min-height: 45px;
+    -fx-max-width: 45px;
+    -fx-max-height: 45px;
+    -fx-border-color: #BDBDBD;
     -fx-border-width: 1px;
-    -fx-background-color: white;
+    -fx-background-color: #FFFFFF;
     -fx-alignment: center;
+    -fx-background-radius: 3px;
+    -fx-border-radius: 3px;
+    -fx-effect: dropshadow(one-pass-box, rgba(0,0,0,0.1), 2, 0, 0, 1);
+    -fx-transition: all 0.2s ease;
 }
 
-/* Case courante : encadré en bleu quand elle a le focus */
+.crossword-cell:hover {
+    -fx-background-color: #F8F9FA;
+    -fx-border-color: #2196F3;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(one-pass-box, rgba(33,150,243,0.3), 4, 0, 0, 2);
+}
+
+/* Case courante : encadré bleu avec animation */
 .crossword-cell:focused {
-    -fx-border-color: #1565C0;
+    -fx-border-color: #2196F3;
     -fx-border-width: 3px;
-    -fx-background-color: #E3F2FD;
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #E3F2FD 0%, #BBDEFB 100%);
+    -fx-effect: dropshadow(one-pass-box, rgba(33,150,243,0.4), 6, 0, 0, 3);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
 }
 
-/* Case noire */
+/* Case noire avec texture */
 .black-square {
-    -fx-background-color: #1a1a1a;
-    -fx-border-color: #1a1a1a;
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #333333 0%, #000000 100%);
+    -fx-border-color: #000000;
+    -fx-border-width: 1px;
+    -fx-effect: innershadow(one-pass-box, rgba(0,0,0,0.6), 3, 0, 0, 0);
 }
 
-/* Case correcte (lettre juste, après Entrée) */
+/* Case correcte avec animation verte */
 .correct-cell {
-    -fx-background-color: #81C784;
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #4CAF50 0%, #388E3C 100%);
+    -fx-border-color: #2E7D32;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(one-pass-box, rgba(76,175,80,0.4), 4, 0, 0, 2);
+    -fx-transition: all 0.3s ease;
 }
 
-/* Case incorrecte (lettre fausse, après Entrée) */
+.correct-cell:hover {
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+}
+
+/* Case incorrecte avec animation rouge */
 .wrong-cell {
-    -fx-background-color: #E57373;
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #F44336 0%, #D32F2F 100%);
+    -fx-border-color: #B71C1C;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(one-pass-box, rgba(244,67,54,0.4), 4, 0, 0, 2);
+    -fx-transition: all 0.3s ease;
 }
 
-/* Lettre dans la case  */
+/* ===========================================
+   LETTRES ET TEXTE
+   =========================================== */
+
 .letter-label {
-    -fx-font-size: 16px;
+    -fx-font-size: 18px;
     -fx-font-weight: bold;
     -fx-text-fill: #212121;
+    -fx-effect: dropshadow(one-pass-box, rgba(255,255,255,0.8), 1, 0, 0, 0);
+    -fx-transition: all 0.2s ease;
 }
 
-/* Listes d'indices */
+.correct-cell .letter-label {
+    -fx-text-fill: #FFFFFF;
+    -fx-effect: dropshadow(one-pass-box, rgba(0,0,0,0.3), 1, 0, 0, 0);
+}
+
+.wrong-cell .letter-label {
+    -fx-text-fill: #FFFFFF;
+    -fx-effect: dropshadow(one-pass-box, rgba(0,0,0,0.3), 1, 0, 0, 0);
+}
+
+/* ===========================================
+   LISTES D'INDICES
+   =========================================== */
+
 .list-view {
-    -fx-background-color: #FAFAFA;
-    -fx-border-color: #CCCCCC;
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E0E0E0;
+    -fx-border-width: 2px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-effect: dropshadow(one-pass-box, rgba(0,0,0,0.1), 4, 0, 0, 2);
 }
 
-/* Indice sélectionné (direction courante) => rouge */
+.list-view .list-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 8px 12px;
+    -fx-font-size: 13px;
+    -fx-border-width: 0 0 1px 0;
+    -fx-border-color: #F0F0F0;
+    -fx-transition: all 0.2s ease;
+}
+
+.list-view .list-cell:hover {
+    -fx-background-color: #F5F5F5;
+    -fx-text-fill: #1976D2;
+}
+
 .list-view .list-cell:selected {
-    -fx-background-color: #E53935;
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #2196F3 0%, #1976D2 100%);
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(one-pass-box, rgba(33,150,243,0.3), 2, 0, 0, 1);
+}
+
+/* ===========================================
+   BARRE DE MENU
+   =========================================== */
+
+.menu-bar {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #263238 0%, #37474F 100%);
+    -fx-border-color: #455A64;
+    -fx-border-width: 0 0 2px 0;
+    -fx-effect: dropshadow(one-pass-box, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}
+
+.menu-bar .label {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+.menu:hover,
+.menu:showing {
+    -fx-background-color: #455A64;
+}
+
+.menu-item {
+    -fx-background-color: #37474F;
+    -fx-text-fill: #FFFFFF;
+}
+
+.menu-item:hover {
+    -fx-background-color: #2196F3;
+    -fx-text-fill: #FFFFFF;
+}
+
+/* ===========================================
+   ÉLÉMENTS MULTIJOUEUR
+   =========================================== */
+
+.player-info {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #FFF3E0 0%, #FFE0B2 100%);
+    -fx-border-color: #FF9800;
+    -fx-border-width: 2px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 10px;
+    -fx-effect: dropshadow(one-pass-box, rgba(255,152,0,0.2), 3, 0, 0, 1);
+}
+
+.player-info .label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #E65100;
+}
+
+.score-display {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2E7D32;
+    -fx-effect: dropshadow(one-pass-box, rgba(46,125,50,0.3), 2, 0, 0, 1);
+}
+
+.timer-display {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1976D2;
+    -fx-background-color: #E3F2FD;
+    -fx-padding: 8px 16px;
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+}
+
+/* ===========================================
+   ANIMATIONS ET EFFETS
+   =========================================== */
+
+@keyframes pulse {
+    0% { -fx-scale-x: 1; -fx-scale-y: 1; }
+    50% { -fx-scale-x: 1.1; -fx-scale-y: 1.1; }
+    100% { -fx-scale-x: 1; -fx-scale-y: 1; }
+}
+
+.cell-completed {
+    animation: pulse 0.6s ease-in-out;
+}
+
+/* ===========================================
+   RESPONSIVITÉ
+   =========================================== */
+
+@media (max-width: 800px) {
+    .crossword-cell {
+        -fx-min-width: 35px;
+        -fx-min-height: 35px;
+        -fx-max-width: 35px;
+        -fx-max-height: 35px;
+    }
+
+    .letter-label {
+        -fx-font-size: 14px;
+    }
+}
+
+/* ===========================================
+   THÈME SOMBRE (optionnel)
+   =========================================== */
+
+.dark-theme .root {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #121212 0%, #1E1E1E 100%);
+}
+
+.dark-theme .crossword-cell {
+    -fx-background-color: #2D2D2D;
+    -fx-border-color: #555555;
+}
+
+.dark-theme .crossword-cell:hover {
+    -fx-background-color: #3D3D3D;
+}
+
+.dark-theme .black-square {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #000000 0%, #1A1A1A 100%);
+}
+
+.dark-theme .list-view {
+    -fx-background-color: #2D2D2D;
+    -fx-border-color: #555555;
+}
+
+.dark-theme .list-view .list-cell {
+    -fx-text-fill: #FFFFFF;
+}
+
+.dark-theme .list-view .list-cell:hover {
+    -fx-background-color: #404040;
+}
+
     -fx-text-fill: white;
     -fx-font-weight: bold;
 }

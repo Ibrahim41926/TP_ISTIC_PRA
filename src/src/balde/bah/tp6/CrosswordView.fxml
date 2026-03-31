@@ -3,33 +3,93 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.CheckMenuItem?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="src.balde.bah.tp6.CrosswordController">
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="src.balde.bah.tp6.CrosswordController" styleClass="root">
     <top>
-        <MenuBar>
-            <Menu text="Fichier">
-                <MenuItem text="Nouvelle grille" onAction="#handleNewGrid"/>
-            </Menu>
-        </MenuBar>
+        <VBox>
+            <MenuBar styleClass="menu-bar">
+                <Menu text="Fichier">
+                    <MenuItem text="Nouvelle grille" onAction="#handleNewGrid"/>
+                    <MenuItem text="Effacer grille" onAction="#handleClear"/>
+                    <SeparatorMenuItem/>
+                    <MenuItem text="Quitter" onAction="#handleExit"/>
+                </Menu>
+                <Menu text="Jeu">
+                    <MenuItem text="Valider grille" onAction="#handleValidate"/>
+                    <SeparatorMenuItem/>
+                    <CheckMenuItem fx:id="multiplayerMode" text="Mode multijoueur" onAction="#toggleMultiplayer"/>
+                    <MenuItem text="Ajouter un second joueur" onAction="#addPlayer"/>
+                    <MenuItem text="Réinitialiser scores" onAction="#resetScores"/>
+                </Menu>
+                <Menu text="Affichage">
+                    <CheckMenuItem fx:id="showTimer" text="Afficher timer" selected="true"/>
+                    <CheckMenuItem fx:id="showHints" text="Afficher indices" selected="true"/>
+                    <SeparatorMenuItem/>
+                    <MenuItem text="À propos" onAction="#showAbout"/>
+                </Menu>
+            </MenuBar>
+
+            <!-- Barre d'informations supérieure -->
+            <HBox spacing="20" style="-fx-padding: 10; -fx-background-color: rgba(255,255,255,0.9); -fx-border-color: #E0E0E0; -fx-border-width: 0 0 1 0;">
+                <Label fx:id="timerLabel" text="⏱️ 00:00" styleClass="timer-display"/>
+                <Label fx:id="gameStatusLabel" text="Prêt à jouer !" style="-fx-font-weight: bold; -fx-text-fill: #1976D2;"/>
+                <Label fx:id="currentPlayerLabel" text="Joueur: Solo" style="-fx-font-weight: bold; -fx-text-fill: #FF9800;"/>
+            </HBox>
+        </VBox>
     </top>
+
     <center>
-        <GridPane fx:id="gridPane" alignment="CENTER" style="-fx-padding: 20;"/>
+        <VBox alignment="CENTER" spacing="10" style="-fx-padding: 20;">
+            <!-- Informations multijoueur -->
+            <HBox fx:id="multiplayerInfo" spacing="20" alignment="CENTER" visible="false" managed="false">
+                <VBox styleClass="player-info" alignment="CENTER">
+                    <Label text="Joueur 1" style="-fx-font-size: 14px;"/>
+                    <Label fx:id="player1Score" text="0" styleClass="score-display"/>
+                </VBox>
+                <VBox styleClass="player-info" alignment="CENTER">
+                    <Label text="Joueur 2" style="-fx-font-size: 14px;"/>
+                    <Label fx:id="player2Score" text="0" styleClass="score-display"/>
+                </VBox>
+            </HBox>
+
+            <!-- Grille principale -->
+            <GridPane fx:id="gridPane" alignment="CENTER" style="-fx-padding: 20; -fx-background-color: rgba(255,255,255,0.95); -fx-background-radius: 10; -fx-border-radius: 10; -fx-effect: dropshadow(one-pass-box, rgba(0,0,0,0.1), 8, 0, 0, 4);"/>
+        </VBox>
     </center>
+
     <right>
-        <VBox spacing="10" prefWidth="250" style="-fx-padding: 10;">
-            <Label text="Indices Horizontaux" style="-fx-font-weight: bold;"/>
-            <ListView fx:id="horizontalListView" VBox.vgrow="ALWAYS"/>
-            
-            <Label text="Indices Verticaux" style="-fx-font-weight: bold;"/>
-            <ListView fx:id="verticalListView" VBox.vgrow="ALWAYS"/>
-            
-            <Button text="Tout Effacer" onAction="#handleClear" maxWidth="Infinity"/>
+        <VBox spacing="15" prefWidth="280" style="-fx-padding: 15; -fx-background-color: rgba(255,255,255,0.95); -fx-border-radius: 0 10 10 0; -fx-effect: dropshadow(one-pass-box, rgba(0,0,0,0.1), 6, 0, 0, 3);">
+            <VBox spacing="5">
+                <Label text="Indices Horizontaux" style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #1976D2;"/>
+                <ListView fx:id="horizontalListView" prefHeight="200" style="-fx-border-radius: 5;"/>
+            </VBox>
+
+            <VBox spacing="5">
+                <Label text="Indices Verticaux" style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #1976D2;"/>
+                <ListView fx:id="verticalListView" prefHeight="200" style="-fx-border-radius: 5;"/>
+            </VBox>
+
+            <!-- Statistiques du jeu -->
+            <VBox spacing="8" style="-fx-padding: 10; -fx-background-color: #F8F9FA; -fx-border-radius: 8; -fx-border-color: #E9ECEF;">
+                <Label text="📊 Statistiques" style="-fx-font-weight: bold; -fx-font-size: 13px;"/>
+                <Label fx:id="statsLabel" text="Cases remplies: 0/0\nTemps: 00:00\nPrécision: 0%" style="-fx-font-size: 11px; -fx-text-fill: #666;"/>
+            </VBox>
+
+            <!-- Boutons d'action -->
+            <VBox spacing="8">
+                <Button text="🔍 Valider" onAction="#handleValidate" style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-weight: bold; -fx-border-radius: 5;"/>
+                <Button text="🗑️ Effacer" onAction="#handleClear" style="-fx-background-color: #FF9800; -fx-text-fill: white; -fx-font-weight: bold; -fx-border-radius: 5;"/>
+                <Button text="🎯 Nouvelle partie" onAction="#handleNewGrid" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; -fx-border-radius: 5;"/>
+            </VBox>
         </VBox>
     </right>
 </BorderPane>

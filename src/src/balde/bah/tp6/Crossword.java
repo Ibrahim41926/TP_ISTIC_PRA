@@ -19,39 +19,63 @@ public class Crossword extends Grid<CrosswordSquare> {
         horizontalClues = FXCollections.observableArrayList();
     }
 	
-	public StringProperty propositionProperty(int row, int column) throws Exception {
+	public StringProperty propositionProperty(int row, int column) {
+        if (!correctCoords(row, column)) {
+            return null; // Coordonnées invalides = propriété null
+        }
         return getCell(row, column).propositionProperty();
     }
 	
-	public boolean isBlackSquare(int row, int column) throws Exception {
+	public boolean isBlackSquare(int row, int column) {
+        if (!correctCoords(row, column)) {
+            return false; // Coordonnées invalides = pas une case noire
+        }
         return getCell(row, column).isBlack();
     }
 
-    public void setBlackSquare(int row, int column, boolean black) throws Exception {
+    public void setBlackSquare(int row, int column, boolean black) {
+        if (!correctCoords(row, column)) {
+            return; // Ne rien faire pour les coordonnées invalides
+        }
         getCell(row, column).setBlack(black);
     }
 
-    public char getSolution(int row, int column) throws Exception {
+    public char getSolution(int row, int column) {
+        if (!correctCoords(row, column)) {
+            return ' '; // Coordonnées invalides = espace
+        }
         Object sol = getCell(row, column).getSolution();
         return (sol == null) ? ' ' : (char) sol;
     }
 
-    public void setSolution(int row, int column, char solution) throws Exception {
+    public void setSolution(int row, int column, char solution) {
+        if (!correctCoords(row, column)) {
+            return; // Ne rien faire pour les coordonnées invalides
+        }
         getCell(row, column).setSolution(solution);
     }
 
-    public char getProposition(int row, int column) throws Exception {
+    public char getProposition(int row, int column) {
+        if (!correctCoords(row, column)) {
+            return ' '; // Coordonnées invalides = espace
+        }
     	String prop = getCell(row, column).getProposition();
         // Si la case est vide ou null, on renvoie un espace, sinon le caractère
         return (prop == null || prop.isEmpty()) ? ' ' : prop.charAt(0);
     }
 
-    public void setProposition(int row, int column, char proposition) throws Exception {
+    public void setProposition(int row, int column, char proposition) {
+        if (!correctCoords(row, column)) {
+            return; // Ne rien faire pour les coordonnées invalides
+        }
     	getCell(row, column).setProposition(String.valueOf(proposition));
     }
 
 
-    public String getDefinition(int row, int column, boolean horizontal) throws Exception {
+    public String getDefinition(int row, int column, boolean horizontal) {
+        if (!correctCoords(row, column)) {
+            return ""; // Coordonnées invalides = définition vide
+        }
         if (horizontal) {
             return (String) getCell(row, column).getHorizontalDefinition();
         } else {
@@ -59,7 +83,10 @@ public class Crossword extends Grid<CrosswordSquare> {
         }
     }
 
-    public void setDefinition(int row, int column, boolean horizontal, String definition) throws Exception {
+    public void setDefinition(int row, int column, boolean horizontal, String definition) {
+        if (!correctCoords(row, column)) {
+            return; // Ne rien faire pour les coordonnées invalides
+        }
         if (horizontal) {
             getCell(row, column).setHorizontalDefinition(definition);
         } else {
