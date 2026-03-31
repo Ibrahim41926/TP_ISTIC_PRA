@@ -1,0 +1,27 @@
+# Compiled binaries
+bin/
+*.class
+
+# IDE
+.vscode/
+.classpath
+.project
+
+# Build artifacts
+target/
+build/
+
+# Libraries and dependencies
+lib/
+*.jar
+
+# JavaFX SDK
+javafx-sdk-*/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temp files
+*.tmp
+*.log
