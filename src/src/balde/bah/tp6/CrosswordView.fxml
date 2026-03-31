@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Button?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="src.balde.bah.tp6.CrosswordController">
+    <top>
+        <MenuBar>
+            <Menu text="Fichier">
+                <MenuItem text="Nouvelle grille" onAction="#handleNewGrid"/>
+            </Menu>
+        </MenuBar>
+    </top>
+    <center>
+        <GridPane fx:id="gridPane" alignment="CENTER" style="-fx-padding: 20;"/>
+    </center>
+    <right>
+        <VBox spacing="10" prefWidth="250" style="-fx-padding: 10;">
+            <Label text="Indices Horizontaux" style="-fx-font-weight: bold;"/>
+            <ListView fx:id="horizontalListView" VBox.vgrow="ALWAYS"/>
+            
+            <Label text="Indices Verticaux" style="-fx-font-weight: bold;"/>
+            <ListView fx:id="verticalListView" VBox.vgrow="ALWAYS"/>
+            
+            <Button text="Tout Effacer" onAction="#handleClear" maxWidth="Infinity"/>
+        </VBox>
+    </right>
+</BorderPane>

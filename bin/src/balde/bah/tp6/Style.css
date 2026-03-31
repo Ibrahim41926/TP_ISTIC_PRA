@@ -1,0 +1,59 @@
+/*  Grille */
+.crossword-cell {
+    -fx-min-width: 40px;
+    -fx-min-height: 40px;
+    -fx-max-width: 40px;
+    -fx-max-height: 40px;
+    -fx-border-color: #888888;
+    -fx-border-width: 1px;
+    -fx-background-color: white;
+    -fx-alignment: center;
+}
+
+/* Case courante : encadré en bleu quand elle a le focus */
+.crossword-cell:focused {
+    -fx-border-color: #1565C0;
+    -fx-border-width: 3px;
+    -fx-background-color: #E3F2FD;
+}
+
+/* Case noire */
+.black-square {
+    -fx-background-color: #1a1a1a;
+    -fx-border-color: #1a1a1a;
+}
+
+/* Case correcte (lettre juste, après Entrée) */
+.correct-cell {
+    -fx-background-color: #81C784;
+}
+
+/* Case incorrecte (lettre fausse, après Entrée) */
+.wrong-cell {
+    -fx-background-color: #E57373;
+}
+
+/* Lettre dans la case  */
+.letter-label {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #212121;
+}
+
+/* Listes d'indices */
+.list-view {
+    -fx-background-color: #FAFAFA;
+    -fx-border-color: #CCCCCC;
+}
+
+/* Indice sélectionné (direction courante) => rouge */
+.list-view .list-cell:selected {
+    -fx-background-color: #E53935;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.list-view .list-cell {
+    -fx-padding: 4px 8px;
+    -fx-font-size: 13px;
+}
